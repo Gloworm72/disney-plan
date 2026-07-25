@@ -24,17 +24,18 @@
   --both: #a78bfa; 
   --out: #64748b;
 }
+
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; padding: 0; height: 100%; }
+html, body { margin: 0; padding: 0; min-height: 100%; background: var(--bg-dark); }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: var(--bg-dark); color: var(--text-main);
-  height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
+  color: var(--text-main);
+  display: flex; flex-direction: column;
 }
 
-#map-container { position: absolute; top: 0; left: 0; width: 100%; height: 100dvh; z-index: 1; }
+#map-container { position: relative; width: 100%; height: 50vh; min-height: 350px; z-index: 1; flex-shrink: 0; }
 #map { width: 100%; height: 100%; }
-#map:after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 -100px 100px -60px rgba(11,18,32,.8); }
+#map:after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 -40px 60px -30px var(--bg-dark); }
 
 #hud { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 14px); left: 16px; right: 16px; z-index: 10; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; pointer-events: none; }
 .hud-pill { pointer-events: auto; background: rgba(15,23,42,.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 10px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,.1); box-shadow: 0 6px 16px rgba(0,0,0,.4); font-weight: 600; font-size: .85rem; display: flex; align-items: center; gap: 8px; max-width: 65%; }
@@ -44,33 +45,20 @@ body {
 
 #recenter-btn { pointer-events: auto; background: rgba(15,23,42,.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); width: 40px; height: 40px; border-radius: 14px; border: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 6px 16px rgba(0,0,0,.4); cursor: pointer; }
 
-#progress-track { position: absolute; left: 16px; right: 16px; top: calc(env(safe-area-inset-top, 0px) + 64px); z-index: 10; height: 4px; border-radius: 4px; background: rgba(255,255,255,.15); overflow: hidden; pointer-events: none; }
-#progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 4px; transition: width .2s ease; }
-
-#bottom-sheet {
-  position: absolute; bottom: 0; left: 0; width: 100%; height: 38dvh;
-  background: var(--bg-panel); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-  border-top-left-radius: 24px; border-top-right-radius: 24px; z-index: 20;
-  display: flex; flex-direction: column;
-  transition: height 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-  box-shadow: 0 -12px 40px rgba(0,0,0,.6);
-  border-top: 1px solid rgba(255,255,255,.1);
+#app-body {
+  position: relative; z-index: 20; 
+  background: var(--bg-dark);
+  flex: 1; display: flex; flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom);
 }
-#bottom-sheet.expanded { height: 88dvh; }
 
-.sheet-handle-container { width: 100%; padding: 14px 0 10px 0; display: flex; justify-content: center; cursor: pointer; flex-shrink: 0; touch-action: none; }
-.sheet-handle { width: 44px; height: 5px; background: rgba(255,255,255,.25); border-radius: 3px; }
+#progress-track { height: 4px; background: rgba(255,255,255,.1); width: 100%; overflow: hidden; flex-shrink: 0;}
+#progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .2s ease; width: 0%; }
 
-@media (min-width: 768px) {
-  #bottom-sheet { width: 420px; height: 96dvh !important; top: 2dvh; left: 16px; bottom: auto; border-radius: 24px; border: 1px solid rgba(255,255,255,.1); padding-bottom: 0; }
-  .sheet-handle-container { display: none; }
-  #hud, #progress-track { left: 456px; }
-}
+.controls-header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0; background: var(--bg-dark); position: sticky; top: 0; z-index: 30; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
 
-.controls-header { padding: 0 20px 14px 20px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0; }
-#countdown-banner { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--accent); font-size: 0.8rem; font-weight: 700; padding: 6px 12px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-#countdown-banner button { background: none; border: none; color: var(--accent); font-size: 1rem; cursor: pointer; padding: 0 4px; line-height: 1; }
+#countdown-banner { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--accent); font-size: 0.8rem; font-weight: 700; padding: 8px 12px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+#countdown-banner button { background: none; border: none; color: var(--accent); font-size: 1.2rem; cursor: pointer; padding: 0 4px; line-height: 1; }
 
 .time-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .time-display-large { font-size: 2.2rem; font-weight: 800; color: var(--accent); letter-spacing: -1px; line-height: 1; }
@@ -82,35 +70,35 @@ body {
 .pace-badge.warn { background: rgba(251,191,36,.2); border: 1px solid rgba(251,191,36,.4); color: var(--warn); }
 .pace-badge.bad { background: rgba(248,113,113,.2); border: 1px solid rgba(248,113,113,.4); color: var(--bad); }
 
-.slider-wrap { margin: 16px 0 8px 0; }
+.slider-wrap { margin: 20px 0 12px 0; }
 input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 6px; background: rgba(255,255,255,.1); outline: none; margin: 0; }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); border: 4px solid var(--bg-dark); box-shadow: 0 2px 8px rgba(56,189,248,.6); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); border: 4px solid var(--bg-dark); box-shadow: 0 2px 8px rgba(56,189,248,.6); }
 
 .control-buttons { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
-.play-btn { width: 42px; height: 42px; border-radius: 12px; border: none; background: var(--accent); color: #0f172a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
-.speed-btn { border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.05); color: var(--text-muted); border-radius: 10px; padding: 8px 12px; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.play-btn { width: 44px; height: 44px; border-radius: 12px; border: none; background: var(--accent); color: #0f172a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.2rem; font-weight: 800; cursor: pointer; }
+.speed-btn { border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.05); color: var(--text-muted); border-radius: 10px; padding: 8px 12px; font-size: .85rem; font-weight: 700; cursor: pointer; flex: 1;}
 .speed-btn.active { color: var(--text-main); border-color: var(--accent); background: rgba(56,189,248,.1); }
-#liveBtn { margin-left: auto; }
+#liveBtn { flex: 1.5; margin-left: 4px; }
 
-#itinerary { flex: 1; overflow-y: auto; padding: 12px 16px calc(24px + env(safe-area-inset-bottom)) 16px; -webkit-overflow-scrolling: touch; }
-.timeline-item { display: flex; gap: 14px; margin-bottom: 8px; padding: 12px; border-radius: 16px; cursor: pointer; background: transparent; border: 1px solid transparent; transition: background 0.2s; }
+#itinerary { padding: 16px 16px 40px 16px; display: flex; flex-direction: column; gap: 10px; }
+.timeline-item { display: flex; gap: 14px; padding: 14px; border-radius: 16px; cursor: pointer; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05); transition: background 0.2s, border 0.2s; }
 .timeline-item:active { background: rgba(255,255,255,.05); }
 .timeline-item.active { background: rgba(56,189,248,.08); border: 1px solid rgba(56,189,248,.3); }
-.timeline-item.done { opacity: 0.45; }
+.timeline-item.done { opacity: 0.5; }
 
-.time-col { font-weight: 700; color: var(--accent); min-width: 65px; font-size: .85rem; padding-top: 4px; }
+.time-col { font-weight: 700; color: var(--accent); min-width: 65px; font-size: .9rem; padding-top: 4px; }
 
 .check-col { display: flex; align-items: flex-start; padding-top: 2px; }
-.step-check { width: 24px; height: 24px; border-radius: 6px; border: 2px solid rgba(255,255,255,.3); display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(255,255,255,.05); transition: all 0.2s; }
+.step-check { width: 26px; height: 26px; border-radius: 6px; border: 2px solid rgba(255,255,255,.3); display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(255,255,255,.05); transition: all 0.2s; }
 .timeline-item.done .step-check { background: var(--accent); border-color: var(--accent); }
-.timeline-item.done .step-check::after { content: ''; width: 5px; height: 10px; border: solid #0f172a; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); margin-bottom: 2px; }
+.timeline-item.done .step-check::after { content: ''; width: 6px; height: 12px; border: solid #0f172a; border-width: 0 3px 3px 0; transform: rotate(45deg); margin-bottom: 3px; }
 
 .info-col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
-.info-col h4 { margin: 0 0 4px 0; font-size: 1rem; color: var(--text-main); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.info-col h4 { margin: 0 0 6px 0; font-size: 1.05rem; color: var(--text-main); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; line-height: 1.2;}
 .badge { font-size: .65rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; color: #0f172a; text-transform: uppercase; letter-spacing: .03em; }
-.info-col p { margin: 0; font-size: .8rem; color: var(--text-muted); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.info-col p { margin: 0; font-size: .85rem; color: var(--text-muted); line-height: 1.4; }
 
-.live-wait { font-size: .75rem; font-weight: 700; color: #fff; background: rgba(0,0,0,0.4); padding: 3px 8px; border-radius: 12px; margin-left: auto; display: flex; align-items: center; gap: 4px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); }
+.live-wait { font-size: .75rem; font-weight: 700; color: #fff; background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 12px; margin-left: auto; display: flex; align-items: center; gap: 4px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); white-space: nowrap;}
 .live-wait.good::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--good); box-shadow: 0 0 6px var(--good); }
 .live-wait.med::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 6px var(--warn); }
 .live-wait.bad::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--bad); box-shadow: 0 0 6px var(--bad); }
@@ -120,16 +108,17 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px;
 .marker-pin { width: 14px; height: 14px; border-radius: 50%; background: rgba(15,23,42,.9); border: 2px solid rgba(255,255,255,.8); box-shadow: 0 0 0 3px rgba(0,0,0,.2); }
 .marker-pin.dl { border-color: var(--dl); } .marker-pin.dca { border-color: var(--dca); } .marker-pin.both { border-color: var(--both); }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 10px; }
+@media (min-width: 768px) {
+    body { flex-direction: row; overflow: hidden; height: 100vh;}
+    #map-container { width: 55%; height: 100vh; }
+    #app-body { width: 45%; height: 100vh; overflow-y: auto; border-left: 1px solid rgba(255,255,255,0.1);}
+}
 </style>
 </head>
 <body>
 
 <div id="map-container">
   <div id="map"></div>
-  <div id="progress-track"><div id="progress-fill" style="width:0%"></div></div>
   <div id="hud">
     <div class="hud-pill"><span class="pulse-dot"></span><span id="hud-status">Loading route…</span></div>
     <div id="recenter-btn" aria-label="Recenter map">
@@ -138,36 +127,35 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px;
   </div>
 </div>
 
-<div id="bottom-sheet">
-  <div class="sheet-handle-container" id="sheet-handle"><div class="sheet-handle"></div></div>
-  
-  <div class="controls-header">
-    <div id="countdown-banner">
-      <span id="cd-text">Calculating...</span>
-      <button onclick="this.parentElement.style.display='none'">✕</button>
-    </div>
+<div id="app-body">
+    <div id="progress-track"><div id="progress-fill"></div></div>
+    <div class="controls-header">
+        <div id="countdown-banner">
+        <span id="cd-text">Calculating...</span>
+        <button onclick="this.parentElement.style.display='none'" aria-label="Dismiss">✕</button>
+        </div>
 
-    <div class="time-row">
-      <div class="time-display-large" id="mainTimeStr">07:15 AM</div>
-      <div class="stats-chip" id="mainStats">0 / 0 stops</div>
+        <div class="time-row">
+        <div class="time-display-large" id="mainTimeStr">07:15 AM</div>
+        <div class="stats-chip" id="mainStats">0 / 0 stops</div>
+        </div>
+        
+        <div class="pace-row" id="paceRow"></div>
+        
+        <div class="slider-wrap">
+        <input type="range" id="timeSlider" min="-45" max="960" value="-45" step="1">
+        </div>
+        
+        <div class="control-buttons">
+        <button class="play-btn" id="playBtn">▶</button>
+        <button class="speed-btn" data-speed="15">×15</button>
+        <button class="speed-btn active" data-speed="30">×30</button>
+        <button class="speed-btn" data-speed="60">×60</button>
+        <button class="speed-btn" id="liveBtn" data-speed="live">Live</button>
+        </div>
     </div>
     
-    <div class="pace-row" id="paceRow"></div>
-    
-    <div class="slider-wrap">
-      <input type="range" id="timeSlider" min="-45" max="960" value="-45" step="1">
-    </div>
-    
-    <div class="control-buttons">
-      <button class="play-btn" id="playBtn">▶</button>
-      <button class="speed-btn" data-speed="15">×15</button>
-      <button class="speed-btn active" data-speed="30">×30</button>
-      <button class="speed-btn" data-speed="60">×60</button>
-      <button class="speed-btn" id="liveBtn" data-speed="live">Live</button>
-    </div>
-  </div>
-  
-  <div id="itinerary"></div>
+    <div id="itinerary"></div>
 </div>
 
 <script>
@@ -211,7 +199,6 @@ const POIS = {
   "Fantasmic! (Rivers of America)": [33.8123,-117.9221,"DL"]
 };
 
-// [Standby Wait, Is Headliner, Ride Duration]
 const ATTRACTIONS = {
   "Radiator Springs Racers":[110,true,6], "Guardians of the Galaxy":[85,true,5],
   "WEB Slingers":[70,true,5], "Toy Story Midway Mania!":[65,true,8],
@@ -238,7 +225,6 @@ const SEQUENCE = [
   ["Grizzly River Run","Riding"],
   ["WEB Slingers","Riding"],
   ["Spiderman Stuntronic","Watching Show"],
-  
   ["Esplanade","Park Hopping to DL"],
   ["Indiana Jones Adventure","Riding"],
   ["Pirates of the Caribbean","Riding (Standby)"],
@@ -246,7 +232,6 @@ const SEQUENCE = [
   ["Smugglers Run","Riding"],
   ["Ronto Roasters","Lunch Break (Mobile Order)"],
   ["Oga's Cantina","Drinks (Standby Line)"],
-  
   ["Runaway Railway","Riding"],
   ["it's a small world","Riding"],
   ["Matterhorn Bobsleds","Riding"],
@@ -254,20 +239,15 @@ const SEQUENCE = [
   ["Star Tours","Riding"],
   ["Buzz Lightyear","Riding"],
   ["Tiki Room & Dole Whip","Snack & Show"],
-  
   ["Jungle Cruise","Riding"],
   ["Big Thunder Mountain","Riding"],
   ["Winnie the Pooh","Riding (Standby)"],
-  
   ["Esplanade","Park Hopping to DCA for Sunset"],
   ["Cars Land","Sh-Boom! Sunset Lighting Moment"],
-  
   ["Esplanade","Park Hopping to DL"],
   ["Bengal BBQ","Quick Service Dinner"],
-  
   ["Castle (Fireworks)","Watching Fireworks"],
   ["Fantasmic! (Rivers of America)","Waiting for Fantasmic"],
-  
   ["Rise of the Resistance","Night Ride (Single Pass)"],
   ["Mr. Toad's Wild Ride","Riding (Standby)"],
   ["Mad Tea Party","Final Ride of Night"]
@@ -304,6 +284,7 @@ function generateRoute(){
     let wait = 0, dur = 15;
     if (ATTRACTIONS[loc]){
       dur = ATTRACTIONS[loc][2];
+      // Force Lightning Lane logic
       if (!desc.includes("Standby")) wait = ATTRACTIONS[loc][1] ? 10 : 5;
       else wait = ATTRACTIONS[loc][0];
     }
@@ -333,27 +314,19 @@ let lastFrame = null;
 let lastRender = null;
 
 let liveApiData = {};
-let checkedStops = JSON.parse(localStorage.getItem('disneyProgress')) || [];
-
+let checkedStops = JSON.parse(localStorage.getItem('disneyProgressV2')) || [];
 let pathCache = [];
-let pathCacheEndTime = null;
 
 function syncPath(upToTime){
+  pathCache = [];
   const start = routeData[0].time;
-  if (pathCacheEndTime === null){
-    pathCache = [];
-    pathCacheEndTime = start - 3;
-  }
-  if (upToTime < pathCacheEndTime){
-    const keepCount = Math.max(0, Math.floor((upToTime - start) / 3) + 1);
-    pathCache.length = keepCount;
-    pathCacheEndTime = keepCount > 0 ? start + (keepCount - 1) * 3 : start - 3;
-  }
-  for (let t = pathCacheEndTime + 3; t <= upToTime; t += 3){
+  for (let t = start; t <= upToTime; t += 3){
     const p = getPosition(t);
     pathCache.push([p.lon, p.lat]);
   }
-  pathCacheEndTime = upToTime;
+  // Guarantee the exact current position is the last point
+  const currentPos = getPosition(upToTime);
+  pathCache.push([currentPos.lon, currentPos.lat]);
 }
 
 function formatTime(mins){
@@ -380,7 +353,7 @@ function realWorldMinutes(){
 }
 
 function saveProgress() {
-    localStorage.setItem('disneyProgress', JSON.stringify(checkedStops));
+    localStorage.setItem('disneyProgressV2', JSON.stringify(checkedStops));
     updatePaceTracker();
 }
 
@@ -416,8 +389,7 @@ function fetchLiveWaits() {
         if (key === "WEB Slingers" && n.includes("web slingers")) matchName = key;
         if (key === "Rise of the Resistance" && n.includes("rise of the resistance")) matchName = key;
         if (key === "Smugglers Run" && n.includes("smugglers run")) matchName = key;
-        // Accurate Soarin match
-        if (key.includes("Soarin") && (n.includes("soarin") || n.includes("california") || n.includes("america"))) matchName = key;
+        if (key.includes("Soarin") && (n.includes("soarin") || n.includes("california") || n.includes("america") || n.includes("world"))) matchName = key;
       }
       if (matchName) {
         liveApiData[matchName] = {
@@ -459,8 +431,8 @@ function populateTimeline(){
         <div class="step-check" data-id="${item.loc + item.time}"></div>
       </div>
       <div class="info-col" onclick="jumpTo(${item.time})">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h4>${item.loc}<span class="badge ${badgeClass(park)}">${park}</span></h4>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: 8px;">
+            <h4>${item.loc} <span class="badge ${badgeClass(park)}">${park}</span></h4>
             ${waitBadge}
         </div>
         <p>${item.desc}</p>
@@ -496,11 +468,9 @@ function updatePaceTracker() {
     }
     
     let nextTargetTime = null;
-    let nextTargetLoc = null;
     for (const item of routeData) {
         if (!checkedStops.includes(item.loc + item.time)) {
             nextTargetTime = item.time;
-            nextTargetLoc = item.loc;
             break;
         }
     }
@@ -592,7 +562,7 @@ function updateUI(flyCamera=false){
   document.querySelectorAll('.timeline-item').forEach((el, i) => {
       if (i === activeIdx) {
           el.classList.add('active');
-          if (flyCamera) el.scrollIntoView({behavior:'smooth', block:'center'});
+          if (flyCamera && !playing) el.scrollIntoView({behavior:'smooth', block:'center'});
       } else {
           el.classList.remove('active');
       }
@@ -605,7 +575,7 @@ function updateUI(flyCamera=false){
     map.getSource('route').setData({type:'Feature', geometry:{type:'LineString', coordinates: pathCache }});
 
     if (!userIsPanning){
-      if (flyCamera) map.easeTo({center:[pos.lon,pos.lat], duration:700, zoom:16.5});
+      if (flyCamera && !playing) map.easeTo({center:[pos.lon,pos.lat], duration:700, zoom:16.5});
       else map.jumpTo({center:[pos.lon,pos.lat]});
     }
   }
@@ -614,7 +584,6 @@ function updateUI(flyCamera=false){
 function jumpTo(time){
   currentTime = time;
   document.getElementById('timeSlider').value = time;
-  if (window.innerWidth < 768) sheet.classList.remove('expanded');
   stopPlaying();
   updateUI(true);
 }
@@ -660,6 +629,7 @@ function tick(ts){
 document.getElementById('playBtn').addEventListener('click', () => {
   if (playing){ stopPlaying(); return; }
   playing = true;
+  userIsPanning = false; // Force re-center on play
   document.getElementById('playBtn').textContent = '❚❚';
   lastFrame = null;
   rafId = requestAnimationFrame(tick);
@@ -699,11 +669,6 @@ function initLiveDefault(){
   }
   updatePaceTracker();
 }
-
-const sheet = document.getElementById('bottom-sheet');
-document.getElementById('sheet-handle').addEventListener('click', () => {
-    sheet.classList.toggle('expanded');
-});
 
 if ('serviceWorker' in navigator){
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });

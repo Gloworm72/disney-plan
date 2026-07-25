@@ -4,122 +4,125 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Disney Day-Of Itinerary</title>
-<meta name="theme-color" content="#0f172a">
+<meta name="description" content="Interactive live route tracker for a full day at the Disneyland Resort.">
+<meta name="theme-color" content="#0b1220">
 <script src="https://unpkg.com/maplibre-gl@4.3.2/dist/maplibre-gl.js"></script>
 <link href="https://unpkg.com/maplibre-gl@4.3.2/dist/maplibre-gl.css" rel="stylesheet">
 <style>
-:root{
-  --bg-dark:#0b1220; --bg-panel:rgba(20,28,45,.92); --accent:#38bdf8; --accent-2:#f472b6;
-  --text-main:#f8fafc; --text-muted:#94a3b8; --good:#34d399; --warn:#fbbf24;
-  --dl:#60a5fa; --dca:#fb923c; --both:#a78bfa; --out:#64748b;
+:root {
+  --bg-dark: #0b1220; 
+  --bg-panel: rgba(20, 28, 45, 0.95); 
+  --accent: #38bdf8; 
+  --accent-2: #f472b6;
+  --text-main: #f8fafc; 
+  --text-muted: #94a3b8; 
+  --good: #34d399; 
+  --warn: #fbbf24;
+  --bad: #f87171;
+  --dl: #60a5fa; 
+  --dca: #fb923c; 
+  --both: #a78bfa; 
+  --out: #64748b;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;padding:0;height:100%;}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-  background:var(--bg-dark); color:var(--text-main);
-  height:100dvh; overflow:hidden; display:flex; flex-direction:column;
-}
-
-/* Map & HUD */
-#map-container{position:absolute;top:0;left:0;width:100%;height:100dvh;z-index:1;}
-#map{width:100%;height:100%;}
-#map:after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 -100px 100px -60px rgba(11,18,32,.8);}
-#hud{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);left:16px;right:16px;z-index:10;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;pointer-events:none;}
-.hud-pill{pointer-events:auto;background:rgba(15,23,42,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:10px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.1);box-shadow:0 6px 16px rgba(0,0,0,.4);font-weight:600;font-size:.85rem;display:flex;align-items:center;gap:8px;max-width:65%;}
-#hud-status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--good);flex-shrink:0;animation:pulse 2s infinite;}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.6);}70%{box-shadow:0 0 0 6px rgba(52,211,153,0);}100%{box-shadow:0 0 0 0 rgba(52,211,153,0);}}
-#recenter-btn{pointer-events:auto;background:rgba(15,23,42,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);width:40px;height:40px;border-radius:14px;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 16px rgba(0,0,0,.4);cursor:pointer;}
-
-/* Progress Bar */
-#progress-track{position:absolute;left:16px;right:16px;top:calc(env(safe-area-inset-top,0px) + 64px);z-index:10;height:4px;border-radius:4px;background:rgba(255,255,255,.15);overflow:hidden;pointer-events:none;}
-#progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:4px;transition:width .2s ease;}
-
-/* Bottom Sheet UI */
-#bottom-sheet{
-  position:absolute;bottom:0;left:0;width:100%;height:38dvh;
-  background:var(--bg-panel);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border-top-left-radius:24px;border-top-right-radius:24px;z-index:20;
-  display:flex;flex-direction:column;
-  transition:height .35s cubic-bezier(.32,.72,0,1);
-  box-shadow:0 -12px 40px rgba(0,0,0,.6);
-  border-top:1px solid rgba(255,255,255,.1);
-  padding-bottom:env(safe-area-inset-bottom);
-}
-#bottom-sheet.expanded{height:88dvh;}
-.sheet-handle-container{width:100%;padding:12px 0 8px 0;display:flex;justify-content:center;cursor:pointer;flex-shrink:0;}
-.sheet-handle{width:40px;height:5px;background:rgba(255,255,255,.2);border-radius:3px;}
-
-/* Desktop Layout */
-@media (min-width:768px){
-  #bottom-sheet{width:420px;height:96dvh!important;top:2dvh;left:16px;bottom:auto;border-radius:24px;border:1px solid rgba(255,255,255,.1);padding-bottom:0;}
-  .sheet-handle-container{display:none;}
-  #hud, #progress-track{left:456px;}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg-dark); color: var(--text-main);
+  height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
 }
 
-/* Controls */
-.controls-header{padding:0 20px 14px 20px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;}
-.time-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
-.time-display-large{font-size:2.2rem;font-weight:800;color:var(--accent);letter-spacing:-1px;line-height:1;}
-.stats-chip{font-size:.75rem;color:var(--text-muted);font-weight:600;background:rgba(255,255,255,.05);padding:6px 12px;border-radius:20px;}
-.pace-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
-.pace-badge{font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:12px;color:#fff;}
-.pace-badge.good{background:rgba(52,211,153,.2);border:1px solid rgba(52,211,153,.4);color:var(--good);}
-.pace-badge.warn{background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.4);color:var(--warn);}
-.pace-badge.bad{background:rgba(248,113,113,.2);border:1px solid rgba(248,113,113,.4);color:#f87171;}
+#map-container { position: absolute; top: 0; left: 0; width: 100%; height: 100dvh; z-index: 1; }
+#map { width: 100%; height: 100%; }
+#map:after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 -100px 100px -60px rgba(11,18,32,.8); }
 
-.slider-wrap{margin:16px 0 8px 0;}
-input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;background:rgba(255,255,255,.1);outline:none;margin:0;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accent);border:4px solid var(--bg-dark);box-shadow:0 2px 8px rgba(56,189,248,.6);}
+#hud { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 14px); left: 16px; right: 16px; z-index: 10; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; pointer-events: none; }
+.hud-pill { pointer-events: auto; background: rgba(15,23,42,.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 10px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,.1); box-shadow: 0 6px 16px rgba(0,0,0,.4); font-weight: 600; font-size: .85rem; display: flex; align-items: center; gap: 8px; max-width: 65%; }
+#hud-status { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); flex-shrink: 0; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(52,211,153,.6); } 70% { box-shadow: 0 0 0 6px rgba(52,211,153,0); } 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); } }
 
-.control-buttons{display:flex;align-items:center;gap:8px;margin-top:14px;}
-.play-btn{width:42px;height:42px;border-radius:12px;border:none;background:var(--accent);color:#0f172a;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem;font-weight:800;cursor:pointer;}
-.speed-btn{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--text-muted);border-radius:10px;padding:8px 12px;font-size:.8rem;font-weight:700;cursor:pointer;}
-.speed-btn.active{color:var(--text-main);border-color:var(--accent);background:rgba(56,189,248,.1);}
-#liveBtn{margin-left:auto;}
+#recenter-btn { pointer-events: auto; background: rgba(15,23,42,.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); width: 40px; height: 40px; border-radius: 14px; border: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 6px 16px rgba(0,0,0,.4); cursor: pointer; }
 
-.tabs{display:flex;gap:6px;margin-top:14px;background:rgba(0,0,0,.3);padding:4px;border-radius:12px;}
-.tab{flex:1;padding:10px 4px;text-align:center;font-size:.8rem;font-weight:700;border-radius:9px;cursor:pointer;color:var(--text-muted);}
-.tab.active{background:var(--accent);color:#0f172a;box-shadow:0 2px 10px rgba(56,189,248,.3);}
+#progress-track { position: absolute; left: 16px; right: 16px; top: calc(env(safe-area-inset-top, 0px) + 64px); z-index: 10; height: 4px; border-radius: 4px; background: rgba(255,255,255,.15); overflow: hidden; pointer-events: none; }
+#progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 4px; transition: width .2s ease; }
 
-/* Timeline List */
-#itinerary{flex:1;overflow-y:auto;padding:12px 16px calc(24px + env(safe-area-inset-bottom)) 16px;-webkit-overflow-scrolling:touch;}
-.timeline-item{display:flex;gap:14px;margin-bottom:8px;padding:12px;border-radius:16px;cursor:pointer;background:transparent;border:1px solid transparent;}
-.timeline-item:active{background:rgba(255,255,255,.05);}
-.timeline-item.active{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);}
-.timeline-item.done{opacity:.4;}
-
-.time-col{font-weight:700;color:var(--accent);min-width:65px;font-size:.85rem;padding-top:4px;}
-
-/* Checkboxes */
-.check-col{display:flex;align-items:flex-start;padding-top:2px;}
-.step-check{
-  width:24px; height:24px; border-radius:6px; border:2px solid rgba(255,255,255,.3);
-  display:flex; align-items:center; justify-content:center; cursor:pointer;
-  background:rgba(255,255,255,.05);
+#bottom-sheet {
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 38dvh;
+  background: var(--bg-panel); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border-top-left-radius: 24px; border-top-right-radius: 24px; z-index: 20;
+  display: flex; flex-direction: column;
+  transition: height 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -12px 40px rgba(0,0,0,.6);
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding-bottom: env(safe-area-inset-bottom);
 }
-.timeline-item.done .step-check{background:var(--accent);border-color:var(--accent);}
-.timeline-item.done .step-check::after{content:'';width:5px;height:10px;border:solid #0f172a;border-width:0 2.5px 2.5px 0;transform:rotate(45deg);margin-bottom:2px;}
+#bottom-sheet.expanded { height: 88dvh; }
 
-.info-col{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;}
-.info-col h4{margin:0 0 4px 0;font-size:1rem;color:var(--text-main);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.badge{font-size:.65rem;font-weight:800;padding:2px 6px;border-radius:6px;color:#0f172a;text-transform:uppercase;letter-spacing:.03em;}
-.info-col p{margin:0;font-size:.8rem;color:var(--text-muted);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sheet-handle-container { width: 100%; padding: 14px 0 10px 0; display: flex; justify-content: center; cursor: pointer; flex-shrink: 0; touch-action: none; }
+.sheet-handle { width: 44px; height: 5px; background: rgba(255,255,255,.25); border-radius: 3px; }
 
-.live-wait { font-size: .75rem; font-weight: 700; color: #fff; background: rgba(0,0,0,0.3); padding: 3px 8px; border-radius: 12px; margin-left: auto; display: flex; align-items: center; gap: 4px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); }
-.live-wait.good::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--good); box-shadow: 0 0 6px var(--good); }
-.live-wait.med::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--warn); box-shadow: 0 0 6px var(--warn); }
-.live-wait.bad::before { content:''; width:6px; height:6px; border-radius:50%; background:#f87171; box-shadow: 0 0 6px #f87171; }
-.live-wait.closed::before { content:''; width:6px; height:6px; border-radius:50%; background:#94a3b8; }
+@media (min-width: 768px) {
+  #bottom-sheet { width: 420px; height: 96dvh !important; top: 2dvh; left: 16px; bottom: auto; border-radius: 24px; border: 1px solid rgba(255,255,255,.1); padding-bottom: 0; }
+  .sheet-handle-container { display: none; }
+  #hud, #progress-track { left: 456px; }
+}
 
-.badge.dl{background:var(--dl);} .badge.dca{background:var(--dca);} .badge.both{background:var(--both);} .badge.out{background:var(--out);}
-.marker-pin{width:16px;height:16px;border-radius:50%;background:rgba(15,23,42,.9);border:2px solid rgba(255,255,255,.8);box-shadow:0 0 0 4px rgba(0,0,0,.2);}
-.marker-pin.dl{border-color:var(--dl);} .marker-pin.dca{border-color:var(--dca);} .marker-pin.both{border-color:var(--both);}
+.controls-header { padding: 0 20px 14px 20px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0; }
+#countdown-banner { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--accent); font-size: 0.8rem; font-weight: 700; padding: 6px 12px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+#countdown-banner button { background: none; border: none; color: var(--accent); font-size: 1rem; cursor: pointer; padding: 0 4px; line-height: 1; }
 
-::-webkit-scrollbar{width:6px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:10px;}
+.time-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.time-display-large { font-size: 2.2rem; font-weight: 800; color: var(--accent); letter-spacing: -1px; line-height: 1; }
+.stats-chip { font-size: .75rem; color: var(--text-muted); font-weight: 600; background: rgba(255,255,255,.05); padding: 6px 12px; border-radius: 20px; }
+
+.pace-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.pace-badge { font-size: .75rem; font-weight: 700; padding: 5px 12px; border-radius: 14px; color: #fff; }
+.pace-badge.good { background: rgba(52,211,153,.2); border: 1px solid rgba(52,211,153,.4); color: var(--good); }
+.pace-badge.warn { background: rgba(251,191,36,.2); border: 1px solid rgba(251,191,36,.4); color: var(--warn); }
+.pace-badge.bad { background: rgba(248,113,113,.2); border: 1px solid rgba(248,113,113,.4); color: var(--bad); }
+
+.slider-wrap { margin: 16px 0 8px 0; }
+input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 6px; background: rgba(255,255,255,.1); outline: none; margin: 0; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); border: 4px solid var(--bg-dark); box-shadow: 0 2px 8px rgba(56,189,248,.6); }
+
+.control-buttons { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+.play-btn { width: 42px; height: 42px; border-radius: 12px; border: none; background: var(--accent); color: #0f172a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
+.speed-btn { border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.05); color: var(--text-muted); border-radius: 10px; padding: 8px 12px; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.speed-btn.active { color: var(--text-main); border-color: var(--accent); background: rgba(56,189,248,.1); }
+#liveBtn { margin-left: auto; }
+
+#itinerary { flex: 1; overflow-y: auto; padding: 12px 16px calc(24px + env(safe-area-inset-bottom)) 16px; -webkit-overflow-scrolling: touch; }
+.timeline-item { display: flex; gap: 14px; margin-bottom: 8px; padding: 12px; border-radius: 16px; cursor: pointer; background: transparent; border: 1px solid transparent; transition: background 0.2s; }
+.timeline-item:active { background: rgba(255,255,255,.05); }
+.timeline-item.active { background: rgba(56,189,248,.08); border: 1px solid rgba(56,189,248,.3); }
+.timeline-item.done { opacity: 0.45; }
+
+.time-col { font-weight: 700; color: var(--accent); min-width: 65px; font-size: .85rem; padding-top: 4px; }
+
+.check-col { display: flex; align-items: flex-start; padding-top: 2px; }
+.step-check { width: 24px; height: 24px; border-radius: 6px; border: 2px solid rgba(255,255,255,.3); display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(255,255,255,.05); transition: all 0.2s; }
+.timeline-item.done .step-check { background: var(--accent); border-color: var(--accent); }
+.timeline-item.done .step-check::after { content: ''; width: 5px; height: 10px; border: solid #0f172a; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); margin-bottom: 2px; }
+
+.info-col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.info-col h4 { margin: 0 0 4px 0; font-size: 1rem; color: var(--text-main); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.badge { font-size: .65rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; color: #0f172a; text-transform: uppercase; letter-spacing: .03em; }
+.info-col p { margin: 0; font-size: .8rem; color: var(--text-muted); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.live-wait { font-size: .75rem; font-weight: 700; color: #fff; background: rgba(0,0,0,0.4); padding: 3px 8px; border-radius: 12px; margin-left: auto; display: flex; align-items: center; gap: 4px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); }
+.live-wait.good::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--good); box-shadow: 0 0 6px var(--good); }
+.live-wait.med::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 6px var(--warn); }
+.live-wait.bad::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--bad); box-shadow: 0 0 6px var(--bad); }
+.live-wait.closed::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); }
+
+.badge.dl { background: var(--dl); } .badge.dca { background: var(--dca); } .badge.both { background: var(--both); } .badge.out { background: var(--out); }
+.marker-pin { width: 14px; height: 14px; border-radius: 50%; background: rgba(15,23,42,.9); border: 2px solid rgba(255,255,255,.8); box-shadow: 0 0 0 3px rgba(0,0,0,.2); }
+.marker-pin.dl { border-color: var(--dl); } .marker-pin.dca { border-color: var(--dca); } .marker-pin.both { border-color: var(--both); }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 10px; }
 </style>
 </head>
 <body>
@@ -137,15 +140,24 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 <div id="bottom-sheet">
   <div class="sheet-handle-container" id="sheet-handle"><div class="sheet-handle"></div></div>
+  
   <div class="controls-header">
+    <div id="countdown-banner">
+      <span id="cd-text">Calculating...</span>
+      <button onclick="this.parentElement.style.display='none'">✕</button>
+    </div>
+
     <div class="time-row">
       <div class="time-display-large" id="mainTimeStr">07:15 AM</div>
       <div class="stats-chip" id="mainStats">0 / 0 stops</div>
     </div>
+    
     <div class="pace-row" id="paceRow"></div>
+    
     <div class="slider-wrap">
       <input type="range" id="timeSlider" min="-45" max="960" value="-45" step="1">
     </div>
+    
     <div class="control-buttons">
       <button class="play-btn" id="playBtn">▶</button>
       <button class="speed-btn" data-speed="15">×15</button>
@@ -153,18 +165,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <button class="speed-btn" data-speed="60">×60</button>
       <button class="speed-btn" id="liveBtn" data-speed="live">Live</button>
     </div>
-    <div class="tabs">
-      <div class="tab active" data-mode="ll">Lightning Lane</div>
-      <div class="tab" data-mode="standby">Standby Only</div>
-    </div>
   </div>
+  
   <div id="itinerary"></div>
 </div>
 
 <script>
-// ---------------------------------------------------------------------------
-// Data model
-// ---------------------------------------------------------------------------
 const POIS = {
   "Mickey & Friends Parking": [33.8121,-117.9255,"Out"],
   "DCA Gates": [33.8087,-117.9189,"DCA"],
@@ -189,13 +195,13 @@ const POIS = {
   "Space Mountain": [33.8111,-117.9168,"DL"],
   "Matterhorn Bobsleds": [33.8127,-117.9174,"DL"],
   "Mr. Toad's Wild Ride": [33.8131,-117.9187,"DL"],
+  "Mad Tea Party": [33.8132,-117.9180,"DL"],
   "Runaway Railway": [33.8145,-117.9184,"DL"],
   "it's a small world": [33.8142,-117.9179,"DL"],
   "Star Tours": [33.8116,-117.9179,"DL"],
   "Buzz Lightyear": [33.8112,-117.9179,"DL"],
   "Winnie the Pooh": [33.8123,-117.9248,"DL"],
   "Peter Pan's Flight": [33.8130,-117.9189,"DL"],
-  "Mad Tea Party": [33.8132,-117.9180,"DL"],
   "Ronto Roasters": [33.8136,-117.9201,"DL"],
   "Oga's Cantina": [33.8140,-117.9201,"DL"],
   "Tiki Room & Dole Whip": [33.8113,-117.9192,"DL"],
@@ -218,11 +224,10 @@ const ATTRACTIONS = {
   "Matterhorn Bobsleds":[55,false,4], "Jungle Cruise":[40,false,8],
   "Star Tours":[35,false,7], "Buzz Lightyear":[35,false,5],
   "it's a small world":[30,false,15], "Mr. Toad's Wild Ride":[30,false,3],
-  "Winnie the Pooh":[20,false,4], "Peter Pan's Flight":[65,true,3],
-  "Spiderman Stuntronic":[15,false,10], "Mad Tea Party":[20,false,3]
+  "Mad Tea Party":[20,false,3], "Winnie the Pooh":[20,false,4], 
+  "Peter Pan's Flight":[65,true,3], "Spiderman Stuntronic":[15,false,10]
 };
 
-// Updated Sequence
 const SEQUENCE = [
   ["Guardians of the Galaxy","Rope Drop / Riding"],
   ["Radiator Springs Racers","Riding (Single Pass)"],
@@ -248,8 +253,8 @@ const SEQUENCE = [
   ["Space Mountain","Riding"],
   ["Star Tours","Riding"],
   ["Buzz Lightyear","Riding"],
-  
   ["Tiki Room & Dole Whip","Snack & Show"],
+  
   ["Jungle Cruise","Riding"],
   ["Big Thunder Mountain","Riding"],
   ["Winnie the Pooh","Riding (Standby)"],
@@ -270,36 +275,36 @@ const SEQUENCE = [
 
 function calcDist(a,b){
   const [lat1,lon1] = POIS[a], [lat2,lon2] = POIS[b];
-  return Math.hypot(lat2-lat1, lon2-lon1) * 1800; // UI walking speed mult
+  return Math.hypot(lat2-lat1, lon2-lon1) * 1800;
 }
 
-function generateRoute(useLL){
+function generateRoute(){
   let timeM = -45;
   let loc = "Mickey & Friends Parking";
   const schedule = [{time:timeM, loc, desc:"Park & Security"}];
 
   timeM += 15; loc = "DCA Gates";
   schedule.push({time:timeM, loc, desc:"Queue for Rope Drop"});
-  timeM = 0; // 8:00 AM
+  timeM = 0;
 
   for (const [nextLoc, desc] of SEQUENCE){
     if(nextLoc === "Castle (Fireworks)") {
-        if (timeM < 815) timeM = 815; // 9:35 PM
+        if (timeM < 815) timeM = 815; 
     } else if (nextLoc === "Fantasmic! (Rivers of America)") {
-        if (timeM < 855) timeM = 855; // 10:15 PM arrival
+        if (timeM < 855) timeM = 855; 
     } else {
         timeM += calcDist(loc, nextLoc);
     }
     
     loc = nextLoc;
 
-    if (loc === "Spiderman Stuntronic" && timeM < 120) timeM = 120; // 10:00 AM show
-    if (loc === "Cars Land" && timeM < 700) timeM = 700; // 7:40 PM sunset
+    if (loc === "Spiderman Stuntronic" && timeM < 120) timeM = 120;
+    if (loc === "Cars Land" && timeM < 700) timeM = 700;
 
     let wait = 0, dur = 15;
     if (ATTRACTIONS[loc]){
       dur = ATTRACTIONS[loc][2];
-      if (useLL && !desc.includes("Standby")) wait = ATTRACTIONS[loc][1] ? 10 : 5;
+      if (!desc.includes("Standby")) wait = ATTRACTIONS[loc][1] ? 10 : 5;
       else wait = ATTRACTIONS[loc][0];
     }
     
@@ -311,20 +316,14 @@ function generateRoute(useLL){
 
     schedule.push({time:timeM, loc, desc});
     timeM += wait + dur;
-    if (timeM >= 960) break; // midnight cutoff
+    if (timeM >= 960) break; 
   }
   return schedule;
 }
 
-const datasets = { ll: generateRoute(true), standby: generateRoute(false) };
+const routeData = generateRoute();
+const RENDER_INTERVAL = 1000 / 30;
 
-// ---------------------------------------------------------------------------
-// App State & Logic
-// ---------------------------------------------------------------------------
-const RENDER_INTERVAL = 1000 / 30; // cap continuous playback rendering to ~30fps on mobile
-
-let currentMode = 'll';
-let currentData = datasets[currentMode];
 let currentTime = -45;
 let playing = false;
 let playSpeed = 30; 
@@ -332,14 +331,29 @@ let liveMode = false;
 let rafId = null;
 let lastFrame = null;
 let lastRender = null;
-let liveApiData = {};
 
-// Saved Checkbox Progress
+let liveApiData = {};
 let checkedStops = JSON.parse(localStorage.getItem('disneyProgress')) || [];
 
-function saveProgress() {
-    localStorage.setItem('disneyProgress', JSON.stringify(checkedStops));
-    updatePaceTracker();
+let pathCache = [];
+let pathCacheEndTime = null;
+
+function syncPath(upToTime){
+  const start = routeData[0].time;
+  if (pathCacheEndTime === null){
+    pathCache = [];
+    pathCacheEndTime = start - 3;
+  }
+  if (upToTime < pathCacheEndTime){
+    const keepCount = Math.max(0, Math.floor((upToTime - start) / 3) + 1);
+    pathCache.length = keepCount;
+    pathCacheEndTime = keepCount > 0 ? start + (keepCount - 1) * 3 : start - 3;
+  }
+  for (let t = pathCacheEndTime + 3; t <= upToTime; t += 3){
+    const p = getPosition(t);
+    pathCache.push([p.lon, p.lat]);
+  }
+  pathCacheEndTime = upToTime;
 }
 
 function formatTime(mins){
@@ -352,7 +366,37 @@ function formatTime(mins){
   return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')} ${ampm}`;
 }
 
-// Fetch Live Wait Times from ThemeParks.wiki
+function formatPace(mins) {
+    const absMins = Math.abs(Math.round(mins));
+    const h = Math.floor(absMins / 60);
+    const m = absMins % 60;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m} min`;
+}
+
+function realWorldMinutes(){
+  const now = new Date();
+  return (now.getHours() - 8) * 60 + now.getMinutes();
+}
+
+function saveProgress() {
+    localStorage.setItem('disneyProgress', JSON.stringify(checkedStops));
+    updatePaceTracker();
+}
+
+function updateCountdown() {
+    const target = new Date('2026-08-15T00:00:00').getTime();
+    const now = new Date().getTime();
+    const diff = target - now;
+    if (diff > 0) {
+        const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+        document.getElementById('cd-text').innerText = `${days} days until Disney!`;
+    } else {
+        document.getElementById('countdown-banner').style.display = 'none';
+    }
+}
+updateCountdown();
+
 function fetchLiveWaits() {
   const dlId = '7340550b-c14d-4def-80bb-acdb51d49a66';
   const dcaId = '832fcd51-ea19-4e77-85c7-75d5843b127c';
@@ -366,15 +410,14 @@ function fetchLiveWaits() {
       const n = ride.name.toLowerCase();
       let matchName = null;
       for (const key of Object.keys(ATTRACTIONS)) {
-        if (n.includes(key.toLowerCase()) || 
-           (key === "Incredicoaster" && n.includes("incredicoaster")) ||
-           (key === "Toy Story Midway Mania!" && n.includes("toy story midway mania")) ||
-           (key === "WEB Slingers" && n.includes("web slingers")) ||
-           (key === "Rise of the Resistance" && n.includes("rise of the resistance")) ||
-           (key === "Smugglers Run" && n.includes("smugglers run"))) {
-          matchName = key;
-          break;
-        }
+        if (n.includes(key.toLowerCase())) { matchName = key; break; }
+        if (key === "Incredicoaster" && n.includes("incredicoaster")) matchName = key;
+        if (key === "Toy Story Midway Mania!" && n.includes("toy story midway mania")) matchName = key;
+        if (key === "WEB Slingers" && n.includes("web slingers")) matchName = key;
+        if (key === "Rise of the Resistance" && n.includes("rise of the resistance")) matchName = key;
+        if (key === "Smugglers Run" && n.includes("smugglers run")) matchName = key;
+        // Accurate Soarin match
+        if (key.includes("Soarin") && (n.includes("soarin") || n.includes("california") || n.includes("america"))) matchName = key;
       }
       if (matchName) {
         liveApiData[matchName] = {
@@ -383,17 +426,14 @@ function fetchLiveWaits() {
         };
       }
     });
-    populateTimeline(); // Re-render to inject wait times
+    populateTimeline();
   });
 }
 
 function getWaitBadgeHtml(loc) {
   if (!liveApiData[loc]) return '';
   const data = liveApiData[loc];
-  
-  if (data.status === 'CLOSED' || data.status === 'DOWN') {
-    return `<div class="live-wait closed">Closed</div>`;
-  }
+  if (data.status === 'CLOSED' || data.status === 'DOWN') return `<div class="live-wait closed">Closed</div>`;
   if (data.wait !== null) {
     let colorClass = 'good';
     if (data.wait >= 45) colorClass = 'med';
@@ -407,7 +447,7 @@ function badgeClass(park){ return park.toLowerCase(); }
 
 function populateTimeline(){
   let html = '';
-  currentData.forEach((item, index) => {
+  routeData.forEach((item, index) => {
     const park = POIS[item.loc] ? POIS[item.loc][2] : 'Out';
     const isChecked = checkedStops.includes(item.loc + item.time);
     const doneClass = isChecked ? 'done' : '';
@@ -430,10 +470,9 @@ function populateTimeline(){
   
   document.getElementById('itinerary').innerHTML = html;
   
-  // Attach checkbox listeners
   document.querySelectorAll('.step-check').forEach(el => {
       el.addEventListener('click', (e) => {
-          e.stopPropagation(); // prevent jumping camera
+          e.stopPropagation();
           const id = el.dataset.id;
           if (checkedStops.includes(id)) {
               checkedStops = checkedStops.filter(i => i !== id);
@@ -456,10 +495,9 @@ function updatePaceTracker() {
         return;
     }
     
-    // Find the first unchecked item in the schedule
     let nextTargetTime = null;
     let nextTargetLoc = null;
-    for (const item of currentData) {
+    for (const item of routeData) {
         if (!checkedStops.includes(item.loc + item.time)) {
             nextTargetTime = item.time;
             nextTargetLoc = item.loc;
@@ -468,54 +506,23 @@ function updatePaceTracker() {
     }
     
     if (nextTargetTime === null) {
-        paceEl.innerHTML = `<div class="pace-badge good">All caught up! 🎉</div>`;
+        paceEl.innerHTML = `<div class="pace-badge good">All caught up!</div>`;
         return;
     }
     
-    const diff = Math.round(nextTargetTime - rwm);
+    const diff = nextTargetTime - rwm;
+    const formattedDiff = formatPace(diff);
     
     if (diff > 0) {
-        paceEl.innerHTML = `<div class="pace-badge good">${diff} min ahead of schedule</div><div class="next-up">Next: <b>${nextTargetLoc}</b></div>`;
+        paceEl.innerHTML = `<div class="pace-badge good">${formattedDiff} ahead of schedule</div>`;
     } else if (diff === 0) {
-        paceEl.innerHTML = `<div class="pace-badge good">Right on time</div><div class="next-up">Next: <b>${nextTargetLoc}</b></div>`;
+        paceEl.innerHTML = `<div class="pace-badge good">Right on time</div>`;
     } else {
-        const lateMins = Math.abs(diff);
-        let cls = 'warn';
-        if (lateMins > 20) cls = 'bad';
-        paceEl.innerHTML = `<div class="pace-badge ${cls}">${lateMins} min behind schedule</div><div class="next-up">Next: <b>${nextTargetLoc}</b></div>`;
+        const cls = Math.abs(diff) > 20 ? 'bad' : 'warn';
+        paceEl.innerHTML = `<div class="pace-badge ${cls}">${formattedDiff} behind schedule</div>`;
     }
 }
 
-
-function realWorldMinutes(){
-  const now = new Date();
-  return (now.getHours() - 8) * 60 + now.getMinutes();
-}
-
-function initLiveDefault(){
-  const rwm = realWorldMinutes();
-  if (rwm >= -45 && rwm <= 960){
-    liveMode = true;
-    document.getElementById('liveBtn').classList.add('active');
-    currentTime = rwm;
-    document.getElementById('timeSlider').value = currentTime;
-    syncToRealTime();
-  }
-  updatePaceTracker();
-}
-
-function syncToRealTime(){
-  if (!liveMode) return;
-  currentTime = Math.max(-45, Math.min(960, realWorldMinutes()));
-  document.getElementById('timeSlider').value = currentTime;
-  updateUI(true);
-  updatePaceTracker();
-  setTimeout(syncToRealTime, 15000);
-}
-
-// ---------------------------------------------------------------------------
-// MapLibre Integration
-// ---------------------------------------------------------------------------
 const map = new maplibregl.Map({
   container: 'map',
   style: {
@@ -551,7 +558,7 @@ map.on('load', () => {
 });
 
 function getPosition(t){
-  const d = currentData;
+  const d = routeData;
   if (t <= d[0].time) return { lon:POIS[d[0].loc][1], lat:POIS[d[0].loc][0], loc:d[0].loc, desc:d[0].desc };
   if (t >= d[d.length-1].time){ const last = d[d.length-1]; return { lon:POIS[last.loc][1], lat:POIS[last.loc][0], loc:last.loc, desc:last.desc }; }
 
@@ -568,31 +575,19 @@ function getPosition(t){
   return { lon:-117.919, lat:33.8105, loc:'', desc:'' };
 }
 
-function buildPathHistory(upToTime) {
-    let coords = [];
-    for (let t = -45; t <= upToTime; t += 2) {
-        let pos = getPosition(t);
-        coords.push([pos.lon, pos.lat]);
-    }
-    // ensure exactly current position is last point to prevent jitter
-    let exactPos = getPosition(upToTime);
-    coords.push([exactPos.lon, exactPos.lat]);
-    return coords;
-}
-
 function updateUI(flyCamera=false){
   const pos = getPosition(currentTime);
 
   document.getElementById('mainTimeStr').textContent = formatTime(currentTime);
-  document.getElementById('mainStats').textContent = `${checkedStops.length} / ${currentData.length} stops checked`;
+  document.getElementById('mainStats').textContent = `${checkedStops.length} / ${routeData.length} stops`;
   document.getElementById('hud-status').textContent = pos.desc === 'Transit' ? pos.loc : `${pos.loc} · ${pos.desc}`;
 
-  const total = currentData[currentData.length-1].time - currentData[0].time;
-  const pct = Math.min(100, Math.max(0, ((currentTime - currentData[0].time) / total) * 100));
+  const total = routeData[routeData.length-1].time - routeData[0].time;
+  const pct = Math.min(100, Math.max(0, ((currentTime - routeData[0].time) / total) * 100));
   document.getElementById('progress-fill').style.width = pct + '%';
 
   let activeIdx = 0;
-  for (let i=0; i<currentData.length; i++){ if (currentTime >= currentData[i].time) activeIdx = i; }
+  for (let i=0; i<routeData.length; i++){ if (currentTime >= routeData[i].time) activeIdx = i; }
 
   document.querySelectorAll('.timeline-item').forEach((el, i) => {
       if (i === activeIdx) {
@@ -605,7 +600,9 @@ function updateUI(flyCamera=false){
 
   if (map.isStyleLoaded()){
     map.getSource('user').setData({type:'Feature', geometry:{type:'Point', coordinates:[pos.lon,pos.lat]}});
-    map.getSource('route').setData({type:'Feature', geometry:{type:'LineString', coordinates: buildPathHistory(currentTime) }});
+    
+    syncPath(currentTime);
+    map.getSource('route').setData({type:'Feature', geometry:{type:'LineString', coordinates: pathCache }});
 
     if (!userIsPanning){
       if (flyCamera) map.easeTo({center:[pos.lon,pos.lat], duration:700, zoom:16.5});
@@ -613,10 +610,6 @@ function updateUI(flyCamera=false){
     }
   }
 }
-
-// ---------------------------------------------------------------------------
-// Listeners & Handlers
-// ---------------------------------------------------------------------------
 
 function jumpTo(time){
   currentTime = time;
@@ -637,19 +630,6 @@ document.getElementById('timeSlider').addEventListener('input', (e) => {
   updateUI(false);
 });
 
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    currentMode = tab.dataset.mode;
-    currentData = datasets[currentMode];
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    populateTimeline();
-    updatePaceTracker();
-    updateUI(true);
-  });
-});
-
-// Playback Logic
 function stopPlaying(){
   playing = false;
   liveMode = false;
@@ -699,13 +679,32 @@ document.querySelectorAll('.speed-btn[data-speed]').forEach(btn => {
   });
 });
 
-// Bottom Sheet Handling
+function syncToRealTime(){
+  if (!liveMode) return;
+  currentTime = Math.max(-45, Math.min(960, realWorldMinutes()));
+  document.getElementById('timeSlider').value = currentTime;
+  updateUI(true);
+  updatePaceTracker();
+  setTimeout(syncToRealTime, 15000);
+}
+
+function initLiveDefault(){
+  const rwm = realWorldMinutes();
+  if (rwm >= -45 && rwm <= 960){
+    liveMode = true;
+    document.getElementById('liveBtn').classList.add('active');
+    currentTime = rwm;
+    document.getElementById('timeSlider').value = currentTime;
+    syncToRealTime();
+  }
+  updatePaceTracker();
+}
+
 const sheet = document.getElementById('bottom-sheet');
 document.getElementById('sheet-handle').addEventListener('click', () => {
     sheet.classList.toggle('expanded');
 });
 
-// Service Worker (Optional for offline use)
 if ('serviceWorker' in navigator){
   window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
 }

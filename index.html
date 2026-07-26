@@ -408,31 +408,36 @@ function fetchLiveWaits() {
     fetch(`https://api.themeparks.wiki/v1/entity/${dlId}/live`).then(r => r.json()).catch(() => ({liveData:[]})),
     fetch(`https://api.themeparks.wiki/v1/entity/${dcaId}/live`).then(r => r.json()).catch(() => ({liveData:[]}))
   ]).then(([dlData, dcaData]) => {
-    const allRides = [...dlData.liveData, ...dcaData.liveData];
+    // 1. Safeguard against the API returning an object without a liveData array
+    const allRides = [...(dlData.liveData || []), ...(dcaData.liveData || [])];
+    
     allRides.forEach(ride => {
       const n = ride.name.toLowerCase();
       let matchName = null;
+      
       // Fuzzy matching API names to our static ATTRACTIONS keys
       for (const key of Object.keys(ATTRACTIONS)) {
         if (n.includes(key.toLowerCase())) { matchName = key; break; }
-        // Handle specific edge cases
         if (key === "Incredicoaster" && n.includes("incredicoaster")) matchName = key;
         if (key === "Toy Story Midway Mania!" && n.includes("toy story midway mania")) matchName = key;
         if (key === "WEB Slingers" && n.includes("web slingers")) matchName = key;
         if (key === "Rise of the Resistance" && n.includes("rise of the resistance")) matchName = key;
         if (key === "Smugglers Run" && n.includes("smugglers run")) matchName = key;
-        // Soarin variants
         if (key.includes("Soarin") && (n.includes("soarin") || n.includes("california") || n.includes("america") || n.includes("world"))) matchName = key;
       }
       
       if (matchName) {
         liveApiData[matchName] = {
           status: ride.status,
-          wait: ride.queue ? ride.queue.STANDBY.waitTime : null
+          // 2. Safely access nested queue data using optional chaining and nullish coalescing
+          wait: ride.queue?.STANDBY?.waitTime ?? null
         };
       }
     });
+    
     populateTimeline();
+  }).catch(err => {
+    console.error("Failed to process live wait times:", err);
   });
 }
 

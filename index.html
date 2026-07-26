@@ -33,18 +33,20 @@ body {
   display: flex; flex-direction: column;
 }
 
+/* Map Container Styles */
 #map-container { position: relative; width: 100%; height: 50vh; min-height: 350px; z-index: 1; flex-shrink: 0; }
 #map { width: 100%; height: 100%; }
 #map:after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 -40px 60px -30px var(--bg-dark); }
 
+/* Heads Up Display */
 #hud { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 14px); left: 16px; right: 16px; z-index: 10; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; pointer-events: none; }
 .hud-pill { pointer-events: auto; background: rgba(15,23,42,.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 10px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,.1); box-shadow: 0 6px 16px rgba(0,0,0,.4); font-weight: 600; font-size: .85rem; display: flex; align-items: center; gap: 8px; max-width: 65%; }
 #hud-status { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); flex-shrink: 0; animation: pulse 2s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(52,211,153,.6); } 70% { box-shadow: 0 0 0 6px rgba(52,211,153,0); } 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); } }
-
 #recenter-btn { pointer-events: auto; background: rgba(15,23,42,.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); width: 40px; height: 40px; border-radius: 14px; border: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 6px 16px rgba(0,0,0,.4); cursor: pointer; }
 
+/* Main App Body Below Map */
 #app-body {
   position: relative; z-index: 20; 
   background: var(--bg-dark);
@@ -52,11 +54,14 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Progress Bar */
 #progress-track { height: 4px; background: rgba(255,255,255,.1); width: 100%; overflow: hidden; flex-shrink: 0;}
 #progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .2s ease; width: 0%; }
 
+/* Sticky Controls Area */
 .controls-header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0; background: var(--bg-dark); position: sticky; top: 0; z-index: 30; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
 
+/* Countdown Banner */
 #countdown-banner { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--accent); font-size: 0.8rem; font-weight: 700; padding: 8px 12px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 #countdown-banner button { background: none; border: none; color: var(--accent); font-size: 1.2rem; cursor: pointer; padding: 0 4px; line-height: 1; }
 
@@ -64,12 +69,14 @@ body {
 .time-display-large { font-size: 2.2rem; font-weight: 800; color: var(--accent); letter-spacing: -1px; line-height: 1; }
 .stats-chip { font-size: .75rem; color: var(--text-muted); font-weight: 600; background: rgba(255,255,255,.05); padding: 6px 12px; border-radius: 20px; }
 
+/* Pace Tracker */
 .pace-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .pace-badge { font-size: .75rem; font-weight: 700; padding: 5px 12px; border-radius: 14px; color: #fff; }
 .pace-badge.good { background: rgba(52,211,153,.2); border: 1px solid rgba(52,211,153,.4); color: var(--good); }
 .pace-badge.warn { background: rgba(251,191,36,.2); border: 1px solid rgba(251,191,36,.4); color: var(--warn); }
 .pace-badge.bad { background: rgba(248,113,113,.2); border: 1px solid rgba(248,113,113,.4); color: var(--bad); }
 
+/* Playback & Sliders */
 .slider-wrap { margin: 20px 0 12px 0; }
 input[type=range] { width: 100%; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 6px; background: rgba(255,255,255,.1); outline: none; margin: 0; }
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); border: 4px solid var(--bg-dark); box-shadow: 0 2px 8px rgba(56,189,248,.6); }
@@ -80,6 +87,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px;
 .speed-btn.active { color: var(--text-main); border-color: var(--accent); background: rgba(56,189,248,.1); }
 #liveBtn { flex: 1.5; margin-left: 4px; }
 
+/* Scrollable Itinerary List */
 #itinerary { padding: 16px 16px 40px 16px; display: flex; flex-direction: column; gap: 10px; }
 .timeline-item { display: flex; gap: 14px; padding: 14px; border-radius: 16px; cursor: pointer; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05); transition: background 0.2s, border 0.2s; }
 .timeline-item:active { background: rgba(255,255,255,.05); }
@@ -88,6 +96,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px;
 
 .time-col { font-weight: 700; color: var(--accent); min-width: 65px; font-size: .9rem; padding-top: 4px; }
 
+/* Checkboxes */
 .check-col { display: flex; align-items: flex-start; padding-top: 2px; }
 .step-check { width: 26px; height: 26px; border-radius: 6px; border: 2px solid rgba(255,255,255,.3); display: flex; align-items: center; justify-content: center; cursor: pointer; background: rgba(255,255,255,.05); transition: all 0.2s; }
 .timeline-item.done .step-check { background: var(--accent); border-color: var(--accent); }
@@ -98,6 +107,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px;
 .badge { font-size: .65rem; font-weight: 800; padding: 2px 6px; border-radius: 6px; color: #0f172a; text-transform: uppercase; letter-spacing: .03em; }
 .info-col p { margin: 0; font-size: .85rem; color: var(--text-muted); line-height: 1.4; }
 
+/* Live Wait Data Chips */
 .live-wait { font-size: .75rem; font-weight: 700; color: #fff; background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 12px; margin-left: auto; display: flex; align-items: center; gap: 4px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); white-space: nowrap;}
 .live-wait.good::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--good); box-shadow: 0 0 6px var(--good); }
 .live-wait.med::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 6px var(--warn); }
@@ -105,9 +115,12 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px;
 .live-wait.closed::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); }
 
 .badge.dl { background: var(--dl); } .badge.dca { background: var(--dca); } .badge.both { background: var(--both); } .badge.out { background: var(--out); }
+
+/* Map Markers */
 .marker-pin { width: 14px; height: 14px; border-radius: 50%; background: rgba(15,23,42,.9); border: 2px solid rgba(255,255,255,.8); box-shadow: 0 0 0 3px rgba(0,0,0,.2); }
 .marker-pin.dl { border-color: var(--dl); } .marker-pin.dca { border-color: var(--dca); } .marker-pin.both { border-color: var(--both); }
 
+/* Desktop Split Layout */
 @media (min-width: 768px) {
     body { flex-direction: row; overflow: hidden; height: 100vh;}
     #map-container { width: 55%; height: 100vh; }
@@ -129,7 +142,9 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px;
 
 <div id="app-body">
     <div id="progress-track"><div id="progress-fill"></div></div>
+    
     <div class="controls-header">
+        <!-- Countdown Banner -->
         <div id="countdown-banner">
         <span id="cd-text">Calculating...</span>
         <button onclick="this.parentElement.style.display='none'" aria-label="Dismiss">✕</button>
@@ -199,6 +214,7 @@ const POIS = {
   "Fantasmic! (Rivers of America)": [33.8123,-117.9221,"DL"]
 };
 
+// [Base Standby Wait, Is Headliner (LL), Ride Duration]
 const ATTRACTIONS = {
   "Radiator Springs Racers":[110,true,6], "Guardians of the Galaxy":[85,true,5],
   "WEB Slingers":[70,true,5], "Toy Story Midway Mania!":[65,true,8],
@@ -225,6 +241,7 @@ const SEQUENCE = [
   ["Grizzly River Run","Riding"],
   ["WEB Slingers","Riding"],
   ["Spiderman Stuntronic","Watching Show"],
+  
   ["Esplanade","Park Hopping to DL"],
   ["Indiana Jones Adventure","Riding"],
   ["Pirates of the Caribbean","Riding (Standby)"],
@@ -232,6 +249,7 @@ const SEQUENCE = [
   ["Smugglers Run","Riding"],
   ["Ronto Roasters","Lunch Break (Mobile Order)"],
   ["Oga's Cantina","Drinks (Standby Line)"],
+  
   ["Runaway Railway","Riding"],
   ["it's a small world","Riding"],
   ["Matterhorn Bobsleds","Riding"],
@@ -239,15 +257,21 @@ const SEQUENCE = [
   ["Star Tours","Riding"],
   ["Buzz Lightyear","Riding"],
   ["Tiki Room & Dole Whip","Snack & Show"],
+  
+  // Revised Evening Order
   ["Jungle Cruise","Riding"],
   ["Big Thunder Mountain","Riding"],
   ["Winnie the Pooh","Riding (Standby)"],
+  
   ["Esplanade","Park Hopping to DCA for Sunset"],
   ["Cars Land","Sh-Boom! Sunset Lighting Moment"],
+  
   ["Esplanade","Park Hopping to DL"],
   ["Bengal BBQ","Quick Service Dinner"],
+  
   ["Castle (Fireworks)","Watching Fireworks"],
   ["Fantasmic! (Rivers of America)","Waiting for Fantasmic"],
+  
   ["Rise of the Resistance","Night Ride (Single Pass)"],
   ["Mr. Toad's Wild Ride","Riding (Standby)"],
   ["Mad Tea Party","Final Ride of Night"]
@@ -255,6 +279,7 @@ const SEQUENCE = [
 
 function calcDist(a,b){
   const [lat1,lon1] = POIS[a], [lat2,lon2] = POIS[b];
+  // 3.5mph walking pace multiplier for UI
   return Math.hypot(lat2-lat1, lon2-lon1) * 1800;
 }
 
@@ -265,9 +290,10 @@ function generateRoute(){
 
   timeM += 15; loc = "DCA Gates";
   schedule.push({time:timeM, loc, desc:"Queue for Rope Drop"});
-  timeM = 0;
+  timeM = 0; // 8:00 AM rope drop
 
   for (const [nextLoc, desc] of SEQUENCE){
+    // Event specific time clamping
     if(nextLoc === "Castle (Fireworks)") {
         if (timeM < 815) timeM = 815; 
     } else if (nextLoc === "Fantasmic! (Rivers of America)") {
@@ -278,8 +304,8 @@ function generateRoute(){
     
     loc = nextLoc;
 
-    if (loc === "Spiderman Stuntronic" && timeM < 120) timeM = 120;
-    if (loc === "Cars Land" && timeM < 700) timeM = 700;
+    if (loc === "Spiderman Stuntronic" && timeM < 120) timeM = 120; // 10:00 AM
+    if (loc === "Cars Land" && timeM < 700) timeM = 700; // 7:40 PM
 
     let wait = 0, dur = 15;
     if (ATTRACTIONS[loc]){
@@ -297,12 +323,13 @@ function generateRoute(){
 
     schedule.push({time:timeM, loc, desc});
     timeM += wait + dur;
-    if (timeM >= 960) break; 
+    if (timeM >= 960) break; // Hard cutoff at midnight
   }
   return schedule;
 }
 
 const routeData = generateRoute();
+
 const RENDER_INTERVAL = 1000 / 30;
 
 let currentTime = -45;
@@ -317,9 +344,11 @@ let liveApiData = {};
 let checkedStops = JSON.parse(localStorage.getItem('disneyProgressV2')) || [];
 let pathCache = [];
 
+// Rebuilt bulletproof geometry cache for MapLibre line rendering
 function syncPath(upToTime){
   pathCache = [];
   const start = routeData[0].time;
+  // Sample point every 3 simulated minutes to draw the curve
   for (let t = start; t <= upToTime; t += 3){
     const p = getPosition(t);
     pathCache.push([p.lon, p.lat]);
@@ -339,6 +368,7 @@ function formatTime(mins){
   return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')} ${ampm}`;
 }
 
+// Convert minutes to "Xh Ym" for better readability
 function formatPace(mins) {
     const absMins = Math.abs(Math.round(mins));
     const h = Math.floor(absMins / 60);
@@ -382,15 +412,19 @@ function fetchLiveWaits() {
     allRides.forEach(ride => {
       const n = ride.name.toLowerCase();
       let matchName = null;
+      // Fuzzy matching API names to our static ATTRACTIONS keys
       for (const key of Object.keys(ATTRACTIONS)) {
         if (n.includes(key.toLowerCase())) { matchName = key; break; }
+        // Handle specific edge cases
         if (key === "Incredicoaster" && n.includes("incredicoaster")) matchName = key;
         if (key === "Toy Story Midway Mania!" && n.includes("toy story midway mania")) matchName = key;
         if (key === "WEB Slingers" && n.includes("web slingers")) matchName = key;
         if (key === "Rise of the Resistance" && n.includes("rise of the resistance")) matchName = key;
         if (key === "Smugglers Run" && n.includes("smugglers run")) matchName = key;
+        // Soarin variants
         if (key.includes("Soarin") && (n.includes("soarin") || n.includes("california") || n.includes("america") || n.includes("world"))) matchName = key;
       }
+      
       if (matchName) {
         liveApiData[matchName] = {
           status: ride.status,
@@ -427,9 +461,12 @@ function populateTimeline(){
     
     html += `<div class="timeline-item ${doneClass}" id="item-${index}">
       <div class="time-col" onclick="jumpTo(${item.time})">${formatTime(item.time)}</div>
+      
+      <!-- Interactive Checkbox -->
       <div class="check-col">
         <div class="step-check" data-id="${item.loc + item.time}"></div>
       </div>
+      
       <div class="info-col" onclick="jumpTo(${item.time})">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: 8px;">
             <h4>${item.loc} <span class="badge ${badgeClass(park)}">${park}</span></h4>
@@ -442,6 +479,7 @@ function populateTimeline(){
   
   document.getElementById('itinerary').innerHTML = html;
   
+  // Attach checkbox listeners
   document.querySelectorAll('.step-check').forEach(el => {
       el.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -467,6 +505,7 @@ function updatePaceTracker() {
         return;
     }
     
+    // Find the first unchecked item
     let nextTargetTime = null;
     for (const item of routeData) {
         if (!checkedStops.includes(item.loc + item.time)) {
@@ -571,6 +610,7 @@ function updateUI(flyCamera=false){
   if (map.isStyleLoaded()){
     map.getSource('user').setData({type:'Feature', geometry:{type:'Point', coordinates:[pos.lon,pos.lat]}});
     
+    // Always sync the path array to avoid skipping
     syncPath(currentTime);
     map.getSource('route').setData({type:'Feature', geometry:{type:'LineString', coordinates: pathCache }});
 
@@ -660,6 +700,7 @@ function syncToRealTime(){
 
 function initLiveDefault(){
   const rwm = realWorldMinutes();
+  // Only auto-snap to live if the user is currently inside the park operating hours
   if (rwm >= -45 && rwm <= 960){
     liveMode = true;
     document.getElementById('liveBtn').classList.add('active');
